@@ -395,6 +395,15 @@ autenticación por token además de la sesión de la web.
 
 ---
 
+## 🗺️ Hoja de Ruta (Roadmap)
+
+Futuras mejoras planificadas para las próximas versiones:
+- [ ] **Recuperación de contraseña**: Flujo seguro para restablecer el acceso mediante correo electrónico.
+- [ ] **Notificaciones por correo**: Alertas proactivas sobre vencimientos de cuotas, deudas y gastos recurrentes.
+- [ ] **Identidades por cuenta**: Asociar datos bancarios (CBU, CVU, CUIL) directamente a cada *Cuenta* en lugar de a nivel global del *Perfil*, para un emparejamiento automático más preciso.
+
+---
+
 ## 📄 Licencia y créditos
 
 Este proyecto es **open source** bajo la licencia [GNU AGPL-3.0](LICENSE).

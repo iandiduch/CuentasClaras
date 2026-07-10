@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cuentas_claras_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cuentas_claras_ci
+      APP_URL: http://localhost:3000
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # package-lock.json is generated with npm 11; npm 10 (bundled with
+      # Node 20) computes a different ideal tree for bundled/optional wasm
+      # deps and fails `npm ci` with "Missing: @emnapi/... from lock file".
+      # Keep this in sync with the same step in the Dockerfile.
+      - name: Use npm 11
+        run: npm install -g npm@11
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      # db/schema.sql is the cumulative snapshot — the only way to bootstrap
+      # an empty database in one shot (see the comment at the top of that
+      # file for why db:migrate alone can't do this from scratch).
+      - name: Load database schema
+        env:
+          PGPASSWORD: postgres
+        run: psql "$DATABASE_URL" -f db/schema.sql
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      # High/critical only — moderate findings are mostly dev-tooling
+      # transitives (see the audit output checked in during the arch
+      # review) and would make this step flaky noise otherwise.
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+  # Builds and publishes the Docker image to GHCR on every push to
+  # main/master that passes the checks above — never on pull_request (forks
+  # don't get package-write tokens, and we don't want to publish anything
+  # that hasn't landed on the main branch). No auto-deploy step by design:
+  # update the running host yourself with
+  #   docker compose pull && docker compose up -d
+  # whenever you want the new image live.
+  publish-docker-image:
+    needs: build-and-test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Image names must be all-lowercase; github.repository preserves
+      # whatever casing the repo/owner actually has (this one has
+      # uppercase letters), so build-push-action would fail on "invalid
+      # reference format" without this.
+      - name: Compute lowercase image name
+        id: image
+        run: echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ steps.image.outputs.name }}:latest
+            ghcr.io/${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

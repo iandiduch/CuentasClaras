@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS categories
+  ADD COLUMN IF NOT EXISTS monthly_budget NUMERIC(14,2);

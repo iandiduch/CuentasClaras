@@ -1,0 +1,49 @@
+# Uses the existing external Postgres (Neon, via DATABASE_URL in .env) —
+# no local `postgres:` service, so this never touches or duplicates real
+# data. Both services run docker-entrypoint.sh on start, which applies any
+# pending db/migrations/*.sql before the real process starts (safe even if
+# both start at the same time — see the race-tolerance note in
+# scripts/apply-migrations.ts).
+#
+# `restart: unless-stopped` is what actually answers "if the worker crashes
+# mid-burst, does it come back on its own?" — Docker restarts the container
+# itself; no pm2/supervisor needed inside it.
+#
+# Port bound to 127.0.0.1 only, not 0.0.0.0: Caddy runs on this same host
+# and reverse-proxies to it over loopback (see the Caddy block in the
+# README). Publishing to all interfaces would let anyone reach the app
+# directly on :8147, bypassing Caddy, crowdsec, and its security headers
+# entirely.
+services:
+  app:
+    build: .
+    image: cuentas-claras:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8147:3000"
+    volumes:
+      - ./storage:/app/storage
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  worker:
+    build: .
+    image: cuentas-claras:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["node", "--import", "tsx", "scripts/inbox-worker.ts"]
+    volumes:
+      - ./storage:/app/storage

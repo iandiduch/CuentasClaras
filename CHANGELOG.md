@@ -4,6 +4,8 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 
 ## [No publicado]
 
+## [1.0.1] - 2026-07-10
+
 ### Agregado
 - **Enlace a la Demo**: Se agregó la URL de la demo en vivo en el archivo README.
 - **Hoja de Ruta (Roadmap)**: Se agregó una sección de hoja de ruta en el README detallando futuras funcionalidades:

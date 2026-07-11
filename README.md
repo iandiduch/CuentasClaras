@@ -403,6 +403,7 @@ Futuras mejoras planificadas para las próximas versiones:
 - [ ] **Recuperación de contraseña**: Flujo seguro para restablecer el acceso mediante correo electrónico.
 - [ ] **Notificaciones por correo**: Alertas proactivas sobre vencimientos de cuotas, deudas y gastos recurrentes.
 - [ ] **Identidades por cuenta**: Asociar datos bancarios (CBU, CVU, CUIL) directamente a cada *Cuenta* en lugar de a nivel global del *Perfil*, para un emparejamiento automático más preciso.
+- [ ] **Deduplicación inteligente (Soft Deduplication)**: Extraer números de comprobante (ej. COELSA ID) para detectar capturas múltiples de una misma operación y enviarlas a Revisión Manual en lugar de auto-confirmarlas.
 
 ---
 

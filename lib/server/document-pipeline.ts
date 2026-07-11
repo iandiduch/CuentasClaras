@@ -164,15 +164,15 @@ async function createReview(
     documentId: string;
     transactionId: string | null;
     reason:
-      | "unknown_category"
-      | "low_confidence"
-      | "missing_fields"
-      | "identity_ambiguous"
-      | "counterparty_ambiguous"
-      | "account_ambiguous"
-      | "other"
-      | "debt_match_ambiguous"
-      | "recurring_match_ambiguous";
+    | "unknown_category"
+    | "low_confidence"
+    | "missing_fields"
+    | "identity_ambiguous"
+    | "counterparty_ambiguous"
+    | "account_ambiguous"
+    | "other"
+    | "debt_match_ambiguous"
+    | "recurring_match_ambiguous";
     details: Record<string, unknown>;
   }
 ) {
@@ -214,6 +214,20 @@ export async function processDocumentPipeline({
 
   if (!document) {
     throw new Error("Documento no encontrado");
+  }
+
+  const [existingTx] = await db
+    .select({ id: transactions.id })
+    .from(transactions)
+    .where(eq(transactions.documentId, documentId))
+    .limit(1);
+
+  if (existingTx) {
+    return {
+      documentId,
+      transactionId: existingTx.id,
+      needsReview: false,
+    };
   }
 
   const [user] = await db
@@ -576,10 +590,10 @@ export async function processDocumentPipeline({
           })),
           counterparty: counterparty
             ? {
-                id: counterparty.id,
-                name: counterparty.displayName,
-                normalizedName: counterparty.normalizedName,
-              }
+              id: counterparty.id,
+              name: counterparty.displayName,
+              normalizedName: counterparty.normalizedName,
+            }
             : null,
           direction,
         },

@@ -214,8 +214,8 @@ export default function ShoppingPage() {
             <Button onClick={() => setCreateOpen(false)} disabled={busy}>
               Cancelar
             </Button>
-            <Button type="submit" variant="contained" disabled={busy || !newName.trim()}>
-              Crear
+            <Button type="submit" variant="contained" loading={busy} disabled={!newName.trim()}>
+              {busy ? "Creando..." : "Crear"}
             </Button>
           </DialogActions>
         </Box>

@@ -331,6 +331,7 @@ export default function DebtsPage() {
       >
         <Stack component="form" onSubmit={handleCreate} spacing={1.3}>
           <Typography variant="h6">Nueva deuda</Typography>
+          {createOpen && error ? <Alert severity="error">{error}</Alert> : null}
           <ToggleButtonGroup
             color="primary"
             value={direction}
@@ -369,8 +370,8 @@ export default function DebtsPage() {
             onChange={(event) => setReminderDate(event.target.value)}
             slotProps={{ inputLabel: { shrink: true } }}
           />
-          <Button variant="contained" type="submit" disabled={busy}>
-            Registrar deuda
+          <Button variant="contained" type="submit" loading={busy}>
+            {busy ? "Registrando..." : "Registrar deuda"}
           </Button>
         </Stack>
       </Drawer>
@@ -396,6 +397,7 @@ export default function DebtsPage() {
         {settling ? (
           <Stack spacing={1.2}>
             <Typography variant="h6">Saldar deuda de {settling.debt.counterpartyName}</Typography>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <Typography variant="body2" color="text.secondary">
               Monto: {formatCurrency(settling.debt.amount, settling.debt.currency)}
             </Typography>
@@ -445,8 +447,8 @@ export default function DebtsPage() {
               >
                 Cancelar
               </Button>
-              <Button variant="contained" onClick={() => void confirmSettle()} disabled={busy}>
-                Saldar
+              <Button variant="contained" onClick={() => void confirmSettle()} loading={busy}>
+                {busy ? "Saldando..." : "Saldar"}
               </Button>
             </Stack>
           </Stack>
@@ -462,8 +464,8 @@ export default function DebtsPage() {
           <Button onClick={() => setDeleting(null)} disabled={busy}>
             Cancelar
           </Button>
-          <Button color="error" variant="contained" onClick={() => void removeDebt()} disabled={busy}>
-            Eliminar
+          <Button color="error" variant="contained" onClick={() => void removeDebt()} loading={busy}>
+            {busy ? "Eliminando..." : "Eliminar"}
           </Button>
         </DialogActions>
       </Dialog>

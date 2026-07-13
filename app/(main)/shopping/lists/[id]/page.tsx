@@ -855,8 +855,8 @@ export default function ShoppingListDetailPage() {
           <Button onClick={() => setDeleteOpen(false)} disabled={busy}>
             Cancelar
           </Button>
-          <Button color="error" variant="contained" onClick={() => void deleteList()} disabled={busy}>
-            Eliminar
+          <Button color="error" variant="contained" onClick={() => void deleteList()} loading={busy}>
+            {busy ? "Eliminando..." : "Eliminar"}
           </Button>
         </DialogActions>
       </Dialog>

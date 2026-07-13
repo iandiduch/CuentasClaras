@@ -4,6 +4,14 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 
 ## [No publicado]
 
+### Corregido
+- **Doble envío de formularios**: Guardar un movimiento manual en Carga rápida no bloqueaba el botón y permitía duplicar el movimiento con un doble toque. Ahora todas las acciones de crear/editar/eliminar (movimientos, categorías, cuentas, cuotas, gastos recurrentes, deudas, perfil, tokens, súper, revisión, inbox y login/registro) bloquean el botón y muestran un spinner con texto de progreso mientras la petición está en vuelo.
+- **Error "Payload invalido" al crear una categoría sin icono**: la API rechazaba `icon: null` en la creación (el schema solo aceptaba el campo ausente). Ahora `icon` y `colorHex` aceptan `null`, igual que en la edición.
+
+### Cambiado
+- **Errores de validación legibles**: la API ahora responde "Dato invalido en \"campo\"" en lugar de un "Payload invalido" genérico, indicando qué campo corregir.
+- **Errores visibles en formularios**: los errores de guardado ahora se muestran dentro del propio drawer/diálogo abierto (antes quedaban ocultos detrás, en la parte superior de la página).
+
 ## [1.0.1] - 2026-07-10
 
 ### Agregado

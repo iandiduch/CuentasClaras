@@ -353,6 +353,7 @@ export default function CategoriesPage() {
       >
         <Stack component="form" onSubmit={handleCreate} spacing={1.3}>
           <Typography variant="h6">Nueva categoria</Typography>
+          {createOpen && error ? <Alert severity="error">{error}</Alert> : null}
           <TextField
             label="Nombre"
             value={name}
@@ -394,8 +395,8 @@ export default function CategoriesPage() {
             }
             label="Incluir en analisis"
           />
-          <Button variant="contained" type="submit" disabled={busy}>
-            Crear categoria
+          <Button variant="contained" type="submit" loading={busy}>
+            {busy ? "Creando..." : "Crear categoria"}
           </Button>
         </Stack>
       </Drawer>
@@ -424,6 +425,7 @@ export default function CategoriesPage() {
         {editForm ? (
           <Stack spacing={1.2}>
             <Typography variant="h6">Editar categoria</Typography>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <TextField
               label="Nombre"
               value={editForm.name}
@@ -506,8 +508,8 @@ export default function CategoriesPage() {
               >
                 Cancelar
               </Button>
-              <Button variant="contained" onClick={() => void saveEdit()} disabled={busy}>
-                Guardar cambios
+              <Button variant="contained" onClick={() => void saveEdit()} loading={busy}>
+                {busy ? "Guardando..." : "Guardar cambios"}
               </Button>
             </Stack>
           </Stack>
@@ -525,8 +527,8 @@ export default function CategoriesPage() {
           <Button onClick={() => setDeleting(null)} disabled={busy}>
             Cancelar
           </Button>
-          <Button color="error" variant="contained" onClick={() => void removeCategory()} disabled={busy}>
-            Eliminar
+          <Button color="error" variant="contained" onClick={() => void removeCategory()} loading={busy}>
+            {busy ? "Eliminando..." : "Eliminar"}
           </Button>
         </DialogActions>
       </Dialog>

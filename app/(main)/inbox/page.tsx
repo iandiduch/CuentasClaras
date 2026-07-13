@@ -261,7 +261,8 @@ export default function InboxPage() {
                       <Button
                         variant="contained"
                         startIcon={<AutorenewOutlinedIcon />}
-                        disabled={retryingId === job.id}
+                        loading={retryingId === job.id}
+                        loadingPosition="start"
                         onClick={() => void retryJob(job)}
                       >
                         Reintentar analisis

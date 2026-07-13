@@ -436,7 +436,8 @@ function ReviewsPageContent() {
                       variant="outlined"
                       color="error"
                       startIcon={<DeleteSweepOutlinedIcon />}
-                      disabled={busyId === review.id}
+                      loading={busyId === review.id}
+                      loadingPosition="start"
                       onClick={() => void dismissReview(review)}
                     >
                       Descartar
@@ -444,7 +445,8 @@ function ReviewsPageContent() {
                     <Button
                       variant="contained"
                       startIcon={<AssignmentTurnedInOutlinedIcon />}
-                      disabled={busyId === review.id}
+                      loading={busyId === review.id}
+                      loadingPosition="start"
                       onClick={() => void resolveReview(review)}
                     >
                       Confirmar

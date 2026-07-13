@@ -241,8 +241,8 @@ export function ClosePurchaseDialog({
         <Button onClick={onClose} disabled={busy}>
           Cancelar
         </Button>
-        <Button variant="contained" onClick={() => void handleConfirm()} disabled={busy}>
-          Cerrar compra
+        <Button variant="contained" onClick={() => void handleConfirm()} loading={busy}>
+          {busy ? "Cerrando..." : "Cerrar compra"}
         </Button>
       </DialogActions>
     </Dialog>

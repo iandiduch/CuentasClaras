@@ -71,7 +71,7 @@ function LoginForm() {
               autoComplete="current-password"
               required
             />
-            <Button type="submit" variant="contained" size="large" disabled={loading}>
+            <Button type="submit" variant="contained" size="large" loading={loading}>
               {loading ? "Ingresando..." : "Ingresar"}
             </Button>
           </Stack>

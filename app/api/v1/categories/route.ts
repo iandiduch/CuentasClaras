@@ -10,12 +10,15 @@ export const runtime = "nodejs";
 const createCategorySchema = z.object({
   name: z.string().trim().min(2).max(60),
   direction: z.enum(["income", "expense", "both"]).default("both"),
-  icon: z.string().trim().min(1).max(30).optional(),
+  // nullable además de optional: la UI manda null cuando no se eligió icono
+  // (mismo criterio que el schema de PATCH en [id]/route.ts).
+  icon: z.string().trim().min(1).max(30).optional().nullable(),
   colorHex: z
     .string()
     .trim()
     .regex(/^#[0-9A-Fa-f]{6}$/)
-    .optional(),
+    .optional()
+    .nullable(),
   includeInAnalysis: z.boolean().default(true),
   monthlyBudget: z.coerce.number().positive().optional().nullable(),
 });

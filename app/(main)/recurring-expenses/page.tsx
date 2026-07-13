@@ -268,6 +268,7 @@ export default function RecurringExpensesPage() {
       >
         <Stack component="form" onSubmit={handleCreate} spacing={1.3}>
           <Typography variant="h6">Nuevo gasto recurrente</Typography>
+          {createOpen && error ? <Alert severity="error">{error}</Alert> : null}
           <TextField
             label="Nombre"
             value={name}
@@ -324,8 +325,8 @@ export default function RecurringExpensesPage() {
             onChange={(event) => setCounterpartyName(event.target.value)}
             helperText="El nombre exacto al que le transferis, para que la IA lo reconozca en un comprobante"
           />
-          <Button variant="contained" type="submit" disabled={busy}>
-            Crear gasto recurrente
+          <Button variant="contained" type="submit" loading={busy}>
+            {busy ? "Creando..." : "Crear gasto recurrente"}
           </Button>
         </Stack>
       </Drawer>
@@ -341,8 +342,8 @@ export default function RecurringExpensesPage() {
           <Button onClick={() => setDeactivating(null)} disabled={busy}>
             Cancelar
           </Button>
-          <Button color="error" variant="contained" onClick={() => void confirmDeactivate()} disabled={busy}>
-            Desactivar
+          <Button color="error" variant="contained" onClick={() => void confirmDeactivate()} loading={busy}>
+            {busy ? "Desactivando..." : "Desactivar"}
           </Button>
         </DialogActions>
       </Dialog>

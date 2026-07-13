@@ -436,6 +436,7 @@ function TransactionsPageContent() {
         {editForm ? (
           <Stack spacing={1.3}>
             <Typography variant="h6">Editar movimiento</Typography>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <FormControl size="small">
               <InputLabel id="edit-direction-label">Tipo</InputLabel>
               <Select
@@ -565,8 +566,8 @@ function TransactionsPageContent() {
               >
                 Cancelar
               </Button>
-              <Button variant="contained" disabled={saving} onClick={() => void saveEdit()}>
-                Guardar cambios
+              <Button variant="contained" loading={saving} onClick={() => void saveEdit()}>
+                {saving ? "Guardando..." : "Guardar cambios"}
               </Button>
             </Stack>
           </Stack>
@@ -584,8 +585,8 @@ function TransactionsPageContent() {
           <Button onClick={() => setDeleting(null)} disabled={saving}>
             Cancelar
           </Button>
-          <Button color="error" variant="contained" disabled={saving} onClick={() => void removeTransaction()}>
-            Eliminar
+          <Button color="error" variant="contained" loading={saving} onClick={() => void removeTransaction()}>
+            {saving ? "Eliminando..." : "Eliminar"}
           </Button>
         </DialogActions>
       </Dialog>

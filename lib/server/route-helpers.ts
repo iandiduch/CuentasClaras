@@ -29,8 +29,16 @@ export async function requireUser(): Promise<CurrentUser | Response> {
 export function parseOrRespond<T>(schema: z.ZodType<T>, data: unknown): T | Response {
   const result = schema.safeParse(data);
   if (!result.success) {
+    // El primer issue alcanza para orientar al usuario ("faltó tal campo");
+    // el resto viaja en details para debugging. Sin esto el cliente muestra
+    // un "Payload invalido" seco que no dice qué corregir.
+    const issue = result.error.issues[0];
+    const field = issue?.path.length ? issue.path.join(".") : null;
     return Response.json(
-      { error: "Payload invalido", details: result.error.flatten() },
+      {
+        error: field ? `Dato invalido en "${field}"` : "Datos invalidos",
+        details: result.error.flatten(),
+      },
       { status: 400 }
     );
   }

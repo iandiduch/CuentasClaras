@@ -86,7 +86,7 @@ export default function RegisterPage() {
               autoComplete="new-password"
               required
             />
-            <Button type="submit" variant="contained" size="large" disabled={loading}>
+            <Button type="submit" variant="contained" size="large" loading={loading}>
               {loading ? "Creando cuenta..." : "Crear cuenta"}
             </Button>
           </Stack>

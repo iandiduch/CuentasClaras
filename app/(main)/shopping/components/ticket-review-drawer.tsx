@@ -393,9 +393,9 @@ export function TicketReviewDrawer({
               <Button
                 variant="contained"
                 onClick={() => void handleApply()}
-                disabled={phase === "applying"}
+                loading={phase === "applying"}
               >
-                Aplicar y seguir
+                {phase === "applying" ? "Aplicando..." : "Aplicar y seguir"}
               </Button>
             </Stack>
           </>

@@ -62,8 +62,10 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
   const [identityType, setIdentityType] = useState<IdentityType>("tax_id");
   const [identityValue, setIdentityValue] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
   const [identityError, setIdentityError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [addingIdentity, setAddingIdentity] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -90,7 +92,9 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
 
   async function handleSaveProfile(event: React.FormEvent) {
     event.preventDefault();
+    if (saving) return;
     setError(null);
+    setSaved(false);
     setSaving(true);
     try {
       await apiFetch("/api/v1/profile", {
@@ -100,6 +104,7 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
           email: email.trim() ? email.trim() : null,
         }),
       });
+      setSaved(true);
       onCompleted?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo guardar el perfil");
@@ -110,12 +115,14 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
 
   async function handleAddIdentity(event: React.FormEvent) {
     event.preventDefault();
+    if (addingIdentity) return;
     setIdentityError(null);
     if (!identityValue.trim()) {
       return;
     }
 
     try {
+      setAddingIdentity(true);
       const { identity } = await apiFetch<{ identity: Identity }>("/api/v1/profile/identities", {
         method: "POST",
         body: JSON.stringify({ identityType, identityValue: identityValue.trim() }),
@@ -124,6 +131,8 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
       setIdentityValue("");
     } catch (err) {
       setIdentityError(err instanceof Error ? err.message : "No se pudo agregar el dato");
+    } finally {
+      setAddingIdentity(false);
     }
   }
 
@@ -156,6 +165,11 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
             ) : null}
 
             {error ? <Alert severity="error">{error}</Alert> : null}
+            {saved && mode === "settings" ? (
+              <Alert severity="success" onClose={() => setSaved(false)}>
+                Perfil guardado.
+              </Alert>
+            ) : null}
 
             <TextField
               label="Nombre completo"
@@ -170,7 +184,7 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
               onChange={(event) => setEmail(event.target.value)}
             />
 
-            <Button type="submit" variant="contained" size="large" disabled={saving}>
+            <Button type="submit" variant="contained" size="large" loading={saving}>
               {saving ? "Guardando..." : mode === "onboarding" ? "Continuar" : "Guardar cambios"}
             </Button>
           </Stack>
@@ -232,8 +246,8 @@ export function ProfileForm({ mode = "settings", onCompleted }: ProfileFormProps
                 onChange={(event) => setIdentityValue(event.target.value)}
                 fullWidth
               />
-              <Button type="submit" variant="outlined">
-                Agregar
+              <Button type="submit" variant="outlined" loading={addingIdentity}>
+                {addingIdentity ? "Agregando..." : "Agregar"}
               </Button>
             </Stack>
           </Stack>
@@ -262,6 +276,7 @@ function ApiTokensSection() {
   const [tokens, setTokens] = useState<ApiToken[]>([]);
   const [label, setLabel] = useState("");
   const [newToken, setNewToken] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -279,11 +294,13 @@ function ApiTokensSection() {
 
   async function handleCreateToken(event: React.FormEvent) {
     event.preventDefault();
+    if (creating) return;
     setError(null);
     if (!label.trim()) {
       return;
     }
     try {
+      setCreating(true);
       const result = await apiFetch<{ id: string; label: string; token: string }>(
         "/api/v1/profile/tokens",
         {
@@ -296,6 +313,8 @@ function ApiTokensSection() {
       void loadTokens();
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo crear el token");
+    } finally {
+      setCreating(false);
     }
   }
 
@@ -343,8 +362,8 @@ function ApiTokensSection() {
               onChange={(event) => setLabel(event.target.value)}
               fullWidth
             />
-            <Button type="submit" variant="outlined">
-              Generar token
+            <Button type="submit" variant="outlined" loading={creating}>
+              {creating ? "Generando..." : "Generar token"}
             </Button>
           </Stack>
 

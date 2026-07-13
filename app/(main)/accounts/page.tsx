@@ -473,6 +473,7 @@ function AccountsPageContent() {
       >
         <Stack component="form" onSubmit={handleCreate} spacing={1.3}>
           <Typography variant="h6">Nueva cuenta</Typography>
+          {createOpen && error ? <Alert severity="error">{error}</Alert> : null}
           <TextField
             label="Nombre"
             value={name}
@@ -504,8 +505,8 @@ function AccountsPageContent() {
             onChange={(event) => setOpeningBalance(event.target.value)}
             slotProps={{ htmlInput: { step: 0.01 } }}
           />
-          <Button variant="contained" type="submit" disabled={busy}>
-            Crear cuenta
+          <Button variant="contained" type="submit" loading={busy}>
+            {busy ? "Creando..." : "Crear cuenta"}
           </Button>
         </Stack>
       </Drawer>
@@ -532,6 +533,7 @@ function AccountsPageContent() {
         {editForm ? (
           <Stack spacing={1.2}>
             <Typography variant="h6">Editar cuenta</Typography>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <TextField
               label="Nombre"
               value={editForm.name}
@@ -602,8 +604,8 @@ function AccountsPageContent() {
               >
                 Cancelar
               </Button>
-              <Button variant="contained" onClick={() => void saveEdit()} disabled={busy}>
-                Guardar cambios
+              <Button variant="contained" onClick={() => void saveEdit()} loading={busy}>
+                {busy ? "Guardando..." : "Guardar cambios"}
               </Button>
             </Stack>
           </Stack>
@@ -631,6 +633,7 @@ function AccountsPageContent() {
         {adjusting ? (
           <Stack spacing={1.2}>
             <Typography variant="h6">Ajustar saldo de {adjusting.account.name}</Typography>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <Typography variant="body2" color="text.secondary">
               Saldo actual: {formatCurrency(adjusting.account.currentBalance, adjusting.account.currency)}
             </Typography>
@@ -690,8 +693,8 @@ function AccountsPageContent() {
               >
                 Cancelar
               </Button>
-              <Button variant="contained" onClick={() => void saveAdjustment()} disabled={busy}>
-                Guardar ajuste
+              <Button variant="contained" onClick={() => void saveAdjustment()} loading={busy}>
+                {busy ? "Guardando..." : "Guardar ajuste"}
               </Button>
             </Stack>
           </Stack>
@@ -702,6 +705,7 @@ function AccountsPageContent() {
         <DialogTitle>Transferir entre cuentas</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5} sx={{ mt: 0.5 }}>
+            {error ? <Alert severity="error">{error}</Alert> : null}
             <TextField
               label="Desde"
               select
@@ -754,8 +758,8 @@ function AccountsPageContent() {
           <Button onClick={() => setTransferOpen(false)} disabled={busy}>
             Cancelar
           </Button>
-          <Button variant="contained" onClick={() => void saveTransfer()} disabled={busy}>
-            Transferir
+          <Button variant="contained" onClick={() => void saveTransfer()} loading={busy}>
+            {busy ? "Transfiriendo..." : "Transferir"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -772,8 +776,8 @@ function AccountsPageContent() {
           <Button onClick={() => setDeleting(null)} disabled={busy}>
             Cancelar
           </Button>
-          <Button color="error" variant="contained" onClick={() => void removeAccount()} disabled={busy}>
-            Desactivar
+          <Button color="error" variant="contained" onClick={() => void removeAccount()} loading={busy}>
+            {busy ? "Desactivando..." : "Desactivar"}
           </Button>
         </DialogActions>
       </Dialog>

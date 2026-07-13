@@ -92,6 +92,7 @@ function QuickPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [trackedJobs, setTrackedJobs] = useState<TrackedJob[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -190,6 +191,7 @@ function QuickPageContent() {
 
   const handleManualSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (saving) return;
     setMessage(null);
     setError(null);
 
@@ -200,6 +202,7 @@ function QuickPageContent() {
     }
 
     try {
+      setSaving(true);
       await apiFetch<{ transaction: { id: string } }>("/api/v1/transactions/manual", {
         method: "POST",
         body: JSON.stringify({
@@ -220,10 +223,14 @@ function QuickPageContent() {
       setConcept("");
       setNotes("");
       setMessage("Movimiento manual guardado.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "No se pudo guardar el movimiento"
       );
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -344,7 +351,7 @@ function QuickPageContent() {
               />
             </Button>
 
-            <Button type="submit" variant="contained" disabled={uploading} size="large">
+            <Button type="submit" variant="contained" loading={uploading} size="large">
               {uploading ? "Encolando..." : "Subir y analizar"}
             </Button>
           </Stack>
@@ -445,8 +452,15 @@ function QuickPageContent() {
               minRows={2}
             />
 
-            <Button type="submit" variant="contained" size="large" startIcon={<SaveOutlinedIcon />}>
-              Guardar movimiento
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              startIcon={<SaveOutlinedIcon />}
+              loading={saving}
+              loadingPosition="start"
+            >
+              {saving ? "Guardando..." : "Guardar movimiento"}
             </Button>
           </Stack>
         </CardContent>

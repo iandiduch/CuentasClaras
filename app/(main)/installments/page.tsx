@@ -277,6 +277,7 @@ export default function InstallmentsPage() {
       >
         <Stack component="form" onSubmit={handleCreate} spacing={1.3}>
           <Typography variant="h6">Nueva compra en cuotas</Typography>
+          {createOpen && error ? <Alert severity="error">{error}</Alert> : null}
           <TextField
             label="Concepto"
             value={concept}
@@ -345,8 +346,8 @@ export default function InstallmentsPage() {
             value={counterpartyName}
             onChange={(event) => setCounterpartyName(event.target.value)}
           />
-          <Button variant="contained" type="submit" disabled={busy}>
-            Crear plan de cuotas
+          <Button variant="contained" type="submit" loading={busy}>
+            {busy ? "Creando..." : "Crear plan de cuotas"}
           </Button>
         </Stack>
       </Drawer>
@@ -363,8 +364,8 @@ export default function InstallmentsPage() {
           <Button onClick={() => setCancelling(null)} disabled={busy}>
             Volver
           </Button>
-          <Button color="error" variant="contained" onClick={() => void confirmCancel()} disabled={busy}>
-            Cancelar plan
+          <Button color="error" variant="contained" onClick={() => void confirmCancel()} loading={busy}>
+            {busy ? "Cancelando..." : "Cancelar plan"}
           </Button>
         </DialogActions>
       </Dialog>

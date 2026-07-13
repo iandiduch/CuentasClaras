@@ -5,6 +5,7 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 ## [No publicado]
 
 ### Corregido
+- **Texto de formularios visible a través del menú inferior**: los labels de los campos (con `z-index: 1` de MUI) se pintaban por encima de la barra de navegación fija, que no declaraba `z-index`. Ahora la barra usa el z-index de app bar del tema.
 - **Doble envío de formularios**: Guardar un movimiento manual en Carga rápida no bloqueaba el botón y permitía duplicar el movimiento con un doble toque. Ahora todas las acciones de crear/editar/eliminar (movimientos, categorías, cuentas, cuotas, gastos recurrentes, deudas, perfil, tokens, súper, revisión, inbox y login/registro) bloquean el botón y muestran un spinner con texto de progreso mientras la petición está en vuelo.
 - **Error "Payload invalido" al crear una categoría sin icono**: la API rechazaba `icon: null` en la creación (el schema solo aceptaba el campo ausente). Ahora `icon` y `colorHex` aceptan `null`, igual que en la edición.
 

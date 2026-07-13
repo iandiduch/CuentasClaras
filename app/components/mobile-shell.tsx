@@ -469,6 +469,10 @@ export function MobileShell({ children }: MobileShellProps) {
           left: 0,
           right: 0,
           bottom: 0,
+          // Sin z-index explícito, los labels de los TextField de MUI
+          // (z-index: 1) se pintan por encima de esta barra y el texto de los
+          // formularios "atraviesa" el menú al scrollear.
+          zIndex: "appBar",
           borderRadius: "20px 20px 0 0",
           overflow: "hidden",
           bgcolor: "rgba(255,255,255,0.96)",
